@@ -1,0 +1,36 @@
+name: Daily Bellhaven CRM hygiene
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # 9am UTC daily — adjust to your team's timezone/cadence
+  workflow_dispatch: {}     # allow manual trigger from the Actions tab
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline (scrape + match + queue proposals)
+        env:
+          CRM_BASE_URL: ${{ secrets.CRM_BASE_URL }}
+          CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
+          BELLHAVEN_SITE_URL: ${{ secrets.BELLHAVEN_SITE_URL }}
+        run: python -m src.pipeline
+
+      # Note: this job only populates the pending-proposal queue.
+      # Approval still requires a human running the review app locally —
+      # by design, nothing writes to the CRM without that step.
+
+      - name: Upload state DB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: state-db
+          path: state.db
