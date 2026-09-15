@@ -1,9 +1,15 @@
 name: Daily Bellhaven CRM hygiene
 
+# Schedule trigger intentionally left commented out for this take-home
+# submission — this points at a shared sandbox with mock data, and I
+# didn't want an unattended daily job hitting a test environment I
+# don't own outright. Uncomment the schedule block and add
+# CRM_BASE_URL / CRM_TOKEN / BELLHAVEN_SITE_URL as repo secrets to run
+# this for real; the file demonstrates the intended cadence config.
 on:
-  schedule:
-    - cron: "0 9 * * *"   # 9am UTC daily — adjust to your team's timezone/cadence
-  workflow_dispatch: {}     # allow manual trigger from the Actions tab
+  # schedule:
+  #   - cron: "0 9 * * *"   # 9am UTC daily — adjust to your team's timezone/cadence
+  workflow_dispatch: {}     # manual trigger from the Actions tab, for demo purposes
 
 jobs:
   run-pipeline:
